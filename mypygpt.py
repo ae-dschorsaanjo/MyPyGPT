@@ -15,16 +15,11 @@ http://www.wtfpl.net/ for more details.
 from datetime import datetime
 from dataclasses import dataclass
 from json import dump as json_dump, load as json_load
-from os import (
-    makedirs,
-    path,
-    remove as os_remove,
-    rename as os_rename,
-    startfile
-)
+from os import makedirs, path, remove as os_remove, rename as os_rename, startfile
 from platform import system as systemname
 from subprocess import Popen
 from random import choice
+from requests import get as requests_get, RequestException
 from re import match, sub
 from tkinter import (
     BooleanVar,
@@ -58,8 +53,7 @@ try:
         isinstance(k, str) and isinstance(v, str) for k, v in PREDEFINED.items()
     ):
         raise ValueError(
-            "PREDEFINED must be a dictionary with string keys "
-            "and string values."
+            "PREDEFINED must be a dictionary with string keys " "and string values."
         )
     if (
         not isinstance(DEFAULT_PERSONALITY, str)
@@ -98,15 +92,12 @@ SYSTEM_MESSAGE = (
     "be incomplete. "
     "In this case, do not start to form a complete sentence, but continue"
     "the last one. Be careful not to cut words in half! "
-    "Do NOT include any text formatting whatsoever as this client is"
-    "unable to display them. This includes but is not limited to bold,"
+    "Do NOT include any text formatting whatsoever as the client program will "
+    "be unable to display them. This includes but is not limited to bold,"
     "italic, underline, strikethrough, code blocks, inline code, etc. "
     "The only possible exception is numbered and bulleted lists using,"
     "simple numbers (e.g. 1., 2., 3.) or bullets (e.g. •, -) to mark list,"
     "items or options. "
-    "Instead of code block by formatting, use additional indentation "
-    "for them and explicitly state in the response what the given code sample "
-    "is for and in which language. "
     "Also stick to ASCII characters whenever possible, only making"
     "exceptions for accented letters that are not available in ASCII but"
     "may be part of the language you are using or quoting."
@@ -143,6 +134,7 @@ FONT_DEFAULT_PREFERENCE = [
     "Tahoma",
     "Arial",
 ]
+DEFAULT_CHATGPT_MODEL = "gpt-4o-mini"
 VERSION = "0.5"
 LITE = False  # Set this to True if you want to force "lite mode".
 #               This will disable the ability to create and save sessions,
@@ -187,7 +179,10 @@ class MyPyGPTClient(Tk):
         self.add_sys_msg = ""
         self.personality = DEFAULT_PERSONALITY
         self.max_tokens = 150
-        self.model = "gpt-4o-mini"
+        self.model = DEFAULT_CHATGPT_MODEL
+        self.models_list = sorted(
+            list({DEFAULT_CHATGPT_MODEL} | {"gpt-4o-mini", "gpt-4o", "o3-mini"})
+        )
 
         self.sessions_dir = "sessions"
         makedirs(self.sessions_dir, exist_ok=True)
@@ -370,6 +365,26 @@ class MyPyGPTClient(Tk):
             message = self.add_space_when_needed(message)
         return message
 
+    def get_response_from_chatgpt(self, message: str) -> str:
+        """
+        Sends a message to the OpenAI API and returns the response.
+
+        Args:
+            message (str): The message to send.
+
+        Returns:
+            str: The response from the OpenAI API.
+        """
+        try:
+            response = openai.chat.completions.create(
+                **self.create_completion_request(message, self.session_data)
+            )
+            # NOTE: token counting?
+            return response.choices[0].message.content.strip(), ASSISTANT
+        except Exception as e:
+            self.popup_info("Error", f"An error occurred: {e}", True)
+            return "Sorry, I couldn't process your request.", SYSTEM
+
     def update_chat_display(
         self, message: str, sender: str | None = None, add_space: bool = False
     ):
@@ -404,6 +419,7 @@ class MyPyGPTClient(Tk):
         response, receiver = self.get_response_from_chatgpt(message)
         response = sub(r"\n+", "\n", response).strip()
         # remove most common markdown formatting
+        print(response)
         response = sub(
             r"(\*{1,2}|_{1,2})(.*?)\1|`(.*?)`",
             lambda m: m.group(2) or m.group(3),
@@ -533,26 +549,6 @@ class MyPyGPTClient(Tk):
             ],
             "max_tokens": self.max_tokens,
         }
-
-    def get_response_from_chatgpt(self, message: str) -> str:
-        """
-        Sends a message to the OpenAI API and returns the response.
-
-        Args:
-            message (str): The message to send.
-
-        Returns:
-            str: The response from the OpenAI API.
-        """
-        try:
-            response = openai.chat.completions.create(
-                **self.create_completion_request(message, self.session_data)
-            )
-            # NOTE: token counting?
-            return response.choices[0].message.content.strip(), ASSISTANT
-        except Exception as e:
-            self.popup_info("Error", f"An error occurred: {e}", True)
-            return "Sorry, I couldn't process your request.", SYSTEM
 
     def new_session(
         self,
@@ -1283,6 +1279,18 @@ class MyPyGPTClient(Tk):
 
         return result.get()
 
+    def get_models(self):
+        try:
+            response = requests_get(
+                "https://api.openai.com/v1/models",
+                headers={"Authorization": f"Bearer {openai.api_key}"},
+            )
+            response.raise_for_status()
+            models = response.json().get("data", [])
+            return [model["id"] for model in models]
+        except RequestException as e:
+            return [DEFAULT_CHATGPT_MODEL]
+
     def edit_settings(self):
         """
         Displays a window to edit the system message and other settings.
@@ -1299,10 +1307,11 @@ class MyPyGPTClient(Tk):
         model_frame.pack(fill="x", pady=5)
         Label(model_frame, text="Model:").pack(side="left")
         model_var = StringVar(value=self.model)
-        model_entry = Entry(
+        model_entry = Combobox(
             model_frame,
             textvariable=model_var,
-            state="disabled",
+            values=self.models_list,
+            state="readonly",
         )
         model_entry.pack(side="right", fill="x", expand=True, padx=10)
 
@@ -1345,17 +1354,27 @@ class MyPyGPTClient(Tk):
             ),
         )
         max_tokens_entry.pack(side="right", fill="x", expand=True, padx=10)
+        
+        button_frame = Frame(settings_frame)
+        button_frame.pack(fill="x", pady=5)
+
+        open_sessions_button = Button(
+            button_frame,
+            text="Open Sessions Folder",
+            command=lambda: self.open_folder(self.sessions_dir),
+        )
+        open_sessions_button.pack(side="left", pady=10)
 
         def save_edits():
+            self.model = model_var.get()
             self.add_sys_msg = system_message_var.get().strip()
             self.max_tokens = max_tokens_var.get()
             self.personality = personality_var.get()
-
-            self.popup_info("Updated", "Settings updated successfully!")
+            # self.popup_info("Updated", "Settings updated successfully!")
             edit_window.destroy()
 
-        save_button = Button(edit_window, text="Save", command=save_edits)
-        save_button.pack(pady=10)
+        save_button = Button(button_frame, text="Save", command=save_edits)
+        save_button.pack(side="right", pady=10)
 
         if self.lite_mode:
             model_entry.configure(state="disabled")
