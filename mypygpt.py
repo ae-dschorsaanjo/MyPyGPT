@@ -15,7 +15,13 @@ http://www.wtfpl.net/ for more details.
 from datetime import datetime
 from dataclasses import dataclass
 from json import dump as json_dump, load as json_load
-from os import path, makedirs, remove as os_remove, rename as os_rename, startfile
+from os import (
+    makedirs,
+    path,
+    remove as os_remove,
+    rename as os_rename,
+    startfile
+)
 from platform import system as systemname
 from subprocess import Popen
 from random import choice
@@ -38,6 +44,7 @@ from tkinter import (
 from tkinter.font import families, nametofont
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.ttk import Combobox
+
 from openai import OpenAI, OpenAIError
 
 try:
@@ -51,7 +58,8 @@ try:
         isinstance(k, str) and isinstance(v, str) for k, v in PREDEFINED.items()
     ):
         raise ValueError(
-            "PREDEFINED must be a dictionary with string keys and string values."
+            "PREDEFINED must be a dictionary with string keys "
+            "and string values."
         )
     if (
         not isinstance(DEFAULT_PERSONALITY, str)
@@ -488,7 +496,7 @@ class MyPyGPTClient(Tk):
                 self.session_data.pop(sd)[CONTENT],
             )
             to_delete += len(self.format_chat_message(content, ROLE_MAP[sender]))
-            if ROLE_MAP[sender] == USER_NAME:
+            if ROLE_MAP[sender] == USER_NAME and content != CONTINUE:
                 last_user_message = content
                 break
 
@@ -774,10 +782,6 @@ class MyPyGPTClient(Tk):
                     continue
                 else:
                     fout += "\n"
-        # elif file_extension == FOUNTAIN:
-        #     ...
-        # elif file_extension == HTML:
-        #     ...
         elif file_extension == MARKDOWN:
             for entry in data:
                 role = entry[ROLE]
@@ -788,7 +792,7 @@ class MyPyGPTClient(Tk):
                     else:
                         role = "response"
                     fout += f"**{role}:** {lines}\n\n"
-        # TODO: different exporting options' implementations
+        # TODO: reconsider adding different exporting options' implementations
 
         with open(session_file, "w", encoding="utf-8") as f:
             if file_extension == JSON:
