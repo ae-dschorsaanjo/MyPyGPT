@@ -48,3 +48,6 @@ personalities.py
 
 # Custom batch files
 *.bat
+
+# Links
+*.lnk
