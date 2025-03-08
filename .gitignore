@@ -45,3 +45,6 @@ sessions/
 
 # Custom personalities
 personalities.py
+
+# Custom batch files
+*.bat
