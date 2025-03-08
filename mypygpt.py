@@ -30,6 +30,7 @@ from tkinter import (
     IntVar,
     Label,
     Listbox,
+    Scale,
     Scrollbar,
     StringVar,
     Text,
@@ -1343,7 +1344,7 @@ class MyPyGPTClient(Tk):
         Label(max_tokens_frame, text="Max Tokens:").pack(side="left")
         max_tokens_var = IntVar(value=self.max_tokens)
         max_tokens_entry = Entry(
-            max_tokens_frame, textvariable=max_tokens_var, width=50
+            max_tokens_frame, textvariable=max_tokens_var
         )
         max_tokens_entry.bind(
             "<KeyPress>",
@@ -1353,8 +1354,34 @@ class MyPyGPTClient(Tk):
                 else None
             ),
         )
-        max_tokens_entry.pack(side="right", fill="x", expand=True, padx=10)
+        max_tokens_entry.pack(side="right", padx=10)
         
+        def slider_changed(val):
+            val = round(int(val) / 50) * 50
+            max_tokens_var.set(int(val))
+        
+        max_tokens_slider = Scale(
+            max_tokens_frame,
+            from_=0,
+            to=1000,
+            orient="horizontal",
+            variable=max_tokens_var,
+            showvalue=False,
+            command=slider_changed,
+        )
+        max_tokens_slider.pack(side="right", fill="x", expand=True, padx=10)
+
+        def update_max_tokens(*args):
+            if value := max_tokens_var.get():
+                max_tokens_entry.delete(0, "end")
+                max_tokens_entry.insert(0, str(value))
+                max_tokens_slider.set(value)
+            else:
+                max_tokens_entry.delete(0, "end")
+                max_tokens_slider.set(0)
+
+        max_tokens_var.trace_add("write", update_max_tokens)
+
         button_frame = Frame(settings_frame)
         button_frame.pack(fill="x", pady=5)
 
