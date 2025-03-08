@@ -136,7 +136,7 @@ FONT_DEFAULT_PREFERENCE = [
     "Arial",
 ]
 DEFAULT_CHATGPT_MODEL = "gpt-4o-mini"
-VERSION = "0.5"
+VERSION = "0.6"
 LITE = False  # Set this to True if you want to force "lite mode".
 #               This will disable the ability to create and save sessions,
 #               makes the current session temporary, prevents changing the
