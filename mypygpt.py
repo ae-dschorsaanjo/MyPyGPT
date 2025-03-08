@@ -20,7 +20,7 @@ from platform import system as systemname
 from subprocess import Popen
 from random import choice
 from requests import get as requests_get, RequestException
-from re import match, sub
+from re import DOTALL, match, sub
 from tkinter import (
     BooleanVar,
     Button,
@@ -422,10 +422,13 @@ class MyPyGPTClient(Tk):
         # remove most common markdown formatting
         print(response)
         response = sub(
-            r"(\*{1,2}|_{1,2})(.*?)\1|`(.*?)`",
-            lambda m: m.group(2) or m.group(3),
+            r"(\*{1,2}|_{1,2})(.*?)\1",
+            lambda m: m.group(2),
             response,
         )
+        response = sub(r"```(\w*)(.*?)```", lambda m: f"\n{m.group(1)}    {m.group(2).replace("\n", "\n    ")}", response, flags=DOTALL)
+        response = sub(r"`(.*?)`", lambda m: m.group(1), response)
+        response = sub(r" +\n", "\n", response)
         self.session_data.append(
             {ROLE: receiver, CONTENT: response, PERSONALITY: self.personality}
         )
