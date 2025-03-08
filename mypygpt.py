@@ -426,7 +426,12 @@ class MyPyGPTClient(Tk):
             lambda m: m.group(2),
             response,
         )
-        response = sub(r"```(\w*)(.*?)```", lambda m: f"\n{m.group(1)}    {m.group(2).replace("\n", "\n    ")}", response, flags=DOTALL)
+        response = sub(
+            r"```(\w*)(.*?)```",
+            lambda m: f"\n{m.group(1)}    {m.group(2).replace("\n", "\n    ")}",
+            response,
+            flags=DOTALL,
+        )
         response = sub(r"`(.*?)`", lambda m: m.group(1), response)
         response = sub(r" +\n", "\n", response)
         self.session_data.append(
@@ -1346,9 +1351,7 @@ class MyPyGPTClient(Tk):
         max_tokens_frame.pack(fill="x", pady=5)
         Label(max_tokens_frame, text="Max Tokens:").pack(side="left")
         max_tokens_var = IntVar(value=self.max_tokens)
-        max_tokens_entry = Entry(
-            max_tokens_frame, textvariable=max_tokens_var
-        )
+        max_tokens_entry = Entry(max_tokens_frame, textvariable=max_tokens_var)
         max_tokens_entry.bind(
             "<KeyPress>",
             lambda e: (
@@ -1358,11 +1361,11 @@ class MyPyGPTClient(Tk):
             ),
         )
         max_tokens_entry.pack(side="right", padx=10)
-        
+
         def slider_changed(val):
             val = round(int(val) / 50) * 50
             max_tokens_var.set(int(val))
-        
+
         max_tokens_slider = Scale(
             max_tokens_frame,
             from_=0,
