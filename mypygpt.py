@@ -420,7 +420,6 @@ class MyPyGPTClient(Tk):
         response, receiver = self.get_response_from_chatgpt(message)
         response = sub(r"\n+", "\n", response).strip()
         # remove most common markdown formatting
-        print(response)
         response = sub(
             r"(\*{1,2}|_{1,2})(.*?)\1",
             lambda m: m.group(2),
