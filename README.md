@@ -44,15 +44,28 @@ Neither of these solutions are included in [requirements.txt](./requirements.txt
 
 ### PyInstaller
 
-Currently
+1. Clone the project (`git clone <this repo>`) and navigate into its root.
+2. Set up virtual environment (e.g. `python -m venv venv`).
+3. Activate environment (`venv\Scripts\activate.bat` if Windows, else `source venv/bin/activate`).
+4. Update pip (`python -m pip install --upgrade pip`).
+5. Install requirements (`pip install -r requirements.txt`).
+6. Install PyInstaller (`pip install pyinstaller`).
+7. Run PyInstaller from root (`pyinstaller --onefile --windowed --noconsole --icon=default.ico mypygpt.py`).
+8. Copy the resulting executable from the new `dist/` folder to your desired location along with the icons (`*.ico`) from root.
+
+<!--
+### Nuitka
 
 1. Clone the project (`git clone <this repo>`) and navigate into its root.
 2. Set up virtual environment (e.g. `python -m venv venv`).
 3. Activate environment (`venv\Scripts\activate.bat` if Windows, else `source venv/bin/activate`).
 4. Update pip (`python -m pip install --upgrade pip`).
 5. Install requirements (`pip install -r requirements.txt`).
-6. Run pyinstaller from root (`pyinstaller --onefile --windowed --noconsole --icon=default.ico mypygpt.py`).
-7. Copy the resulting executable from the new `dist/` folder to your desired location along with the icons (`*.ico`) from root.
+6. Install Nuitka (`pip install nuitka`)
+7. (optional) You may need to disable anti-virus (incl. Windows Defender) to scan the build folders (`mypygpt.build`, `mypygpt.dist`, `mypygpt.onefile-build`).
+8. Run Nuitka from root (`python -m nuitka --follow-imports --mode=onefile --windows-icon-from-ico=icons/default.ico --include-data-dir=icons=icons --enable-plugin=tk-inter mypygpt.py`)
+8. Copy the resulting executable from the new `mypygpt.dist/` folder to your desired location along with the icons (`*.ico`) from root.
+-->
 
 ## Future plans
 
