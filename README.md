@@ -40,6 +40,12 @@ No session files will be created. If you want to save the conversation, you have
 
 ## Building an exe (step-by-step)
 
+Neither of these solutions are included in [requirements.txt](./requirements.txt).
+
+### PyInstaller
+
+Currently
+
 1. Clone the project (`git clone <this repo>`) and navigate into its root.
 2. Set up virtual environment (e.g. `python -m venv venv`).
 3. Activate environment (`venv\Scripts\activate.bat` if Windows, else `source venv/bin/activate`).
@@ -56,7 +62,6 @@ No session files will be created. If you want to save the conversation, you have
 - Add a way to upload an image and pass it along with some text.
 - Add a way to upload text files and pass it along with some text.
 - Add command line parameters to run in different modes (e.g. lite mode).
-- Create a better way to input integers (scrollbar + restricted entry).
 
 ## License
 

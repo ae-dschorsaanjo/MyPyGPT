@@ -1288,6 +1288,11 @@ class MyPyGPTClient(Tk):
         return result.get()
 
     def get_models(self):
+        """
+        Gets the list of available models from the OpenAI API.
+        
+        This function is currently unused.
+        """
         try:
             response = requests_get(
                 "https://api.openai.com/v1/models",
