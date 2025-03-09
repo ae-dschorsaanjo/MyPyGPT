@@ -135,6 +135,8 @@ FONT_DEFAULT_PREFERENCE = [
     "Tahoma",
     "Arial",
 ]
+SESSIONS_DIR = "sessions"
+ICONS_DIR = "icons"
 DEFAULT_CHATGPT_MODEL = "gpt-4o-mini"
 VERSION = "0.6"
 LITE = False  # Set this to True if you want to force "lite mode".
@@ -163,7 +165,7 @@ class MyPyGPTClient(Tk):
             self.title(f"MyPyGPT Client v{VERSION}")
         else:
             self.title(f"MyPyGPT Client Lite v{VERSION}")
-        self.iconbitmap(Icons.DEFAULT)
+        self.iconbitmap(f"{ICONS_DIR}/{Icons.DEFAULT}")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         default_font = nametofont("TkDefaultFont")
@@ -185,7 +187,7 @@ class MyPyGPTClient(Tk):
             list({DEFAULT_CHATGPT_MODEL} | {"gpt-4o-mini", "gpt-4o", "o3-mini"})
         )
 
-        self.sessions_dir = "sessions"
+        self.sessions_dir = SESSIONS_DIR
         makedirs(self.sessions_dir, exist_ok=True)
 
         self.current_session = None
@@ -965,7 +967,7 @@ class MyPyGPTClient(Tk):
         info_window = Toplevel(self)
         info_window.title(title)
         info_window.resizable(False, False)
-        info_window.iconbitmap(Icons.ERROR if error else Icons.INFO)
+        info_window.iconbitmap(f"{ICONS_DIR}/" + (Icons.ERROR if error else Icons.INFO))
 
         Label(info_window, text=message, wraplength=280).pack(padx=20, pady=10)
 
@@ -998,7 +1000,7 @@ class MyPyGPTClient(Tk):
         popup = Toplevel(self)
         popup.title(title)
         popup.resizable(False, False)
-        popup.iconbitmap(Icons.ASK)
+        popup.iconbitmap(f"{ICONS_DIR}/{Icons.ASK}")
 
         Label(popup, text=message, wraplength=280).pack(padx=20, pady=10)
 
@@ -1039,7 +1041,7 @@ class MyPyGPTClient(Tk):
         popup = Toplevel(self)
         popup.title(title)
         popup.resizable(False, False)
-        popup.iconbitmap(Icons.DEFAULT)
+        popup.iconbitmap(f"{ICONS_DIR}/{Icons.DEFAULT}")
 
         Label(popup, text=message, wraplength=280).pack(padx=20, pady=10)
 
@@ -1095,7 +1097,7 @@ class MyPyGPTClient(Tk):
         popup = Toplevel(self)
         popup.title(title)
         popup.resizable(False, False)
-        popup.iconbitmap(Icons.ASK)
+        popup.iconbitmap(f"{ICONS_DIR}/{Icons.ASK}")
 
         Label(popup, text=prompt, wraplength=280).pack(padx=20, pady=10)
 
@@ -1159,7 +1161,7 @@ class MyPyGPTClient(Tk):
         popup = Toplevel(self)
         popup.title(title)
         popup.resizable(False, False)
-        popup.iconbitmap(Icons.ASK)
+        popup.iconbitmap(f"{ICONS_DIR}/{Icons.ASK}")
 
         Label(popup, text=prompt, wraplength=280).pack(padx=20, pady=10)
 
@@ -1221,7 +1223,7 @@ class MyPyGPTClient(Tk):
         popup.title(title)
         popup.configure(width=480)
         popup.resizable(False, False)
-        popup.iconbitmap(Icons.ASK)
+        popup.iconbitmap(f"{ICONS_DIR}/{Icons.ASK}")
 
         Label(popup, text=message, wraplength=280).pack(padx=20, pady=10)
 
@@ -1311,7 +1313,7 @@ class MyPyGPTClient(Tk):
         edit_window = Toplevel(self)
         edit_window.title("Edit System Message")
         edit_window.resizable(False, False)
-        edit_window.iconbitmap(Icons.DEFAULT)
+        edit_window.iconbitmap(f"{ICONS_DIR}/{Icons.DEFAULT}")
 
         settings_frame = Frame(edit_window)
         settings_frame.pack(padx=10, pady=10, fill="both", expand=True)

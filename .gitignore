@@ -31,7 +31,8 @@ MANIFEST
 
 # Nuitka
 *.build/
-*.dist
+*.dist/
+*.onefile-build/
 
 # PyBuilder
 .pybuilder/
