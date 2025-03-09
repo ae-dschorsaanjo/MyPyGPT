@@ -29,6 +29,10 @@ MANIFEST
 *.manifest
 *.spec
 
+# Nuitka
+*.build/
+*.dist
+
 # PyBuilder
 .pybuilder/
 target/
