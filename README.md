@@ -50,7 +50,7 @@ Neither of these solutions are included in [requirements.txt](./requirements.txt
 4. Update pip (`python -m pip install --upgrade pip`).
 5. Install requirements (`pip install -r requirements.txt`).
 6. Install PyInstaller (`pip install pyinstaller`).
-7. Run PyInstaller from root (`pyinstaller --onefile --windowed --noconsole --icon=default.ico mypygpt.py`).
+7. Run PyInstaller from root (`pyinstaller --onefile --windowed --noconsole --icon=icons/default.ico mypygpt.py`).
 8. Copy the resulting executable from the new `dist/` folder to your desired location along with the icons (`*.ico`) from root.
 
 <!--
