@@ -1416,7 +1416,7 @@ class MyPyGPTClient(Tk):
         save_button.pack(side="right", pady=10)
 
         if self.lite_mode:
-            model_entry.configure(state="disabled")
+            # model_entry.configure(state="disabled")
             system_entry.configure(state="disabled")
 
         edit_window.transient(self)
